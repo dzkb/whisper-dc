@@ -14,3 +14,13 @@ The speech-to-text model used is a pre-trained [OpenAI's Whisper](https://github
 - Run the code: `python main.py`
 
 The bot reacts to discord messages that have an audio attachment with .ogg extension.
+
+# Configuration
+
+The bot supports the following environment variables:
+
+- `DISCORD_TOKEN` (required) - the token used to authenticate the bot
+- `MODEL_NAME` - the name of the model to be loaded by `faster-whisper` from Hugging Face Hub. Refer to the original repository to learn more about available pre-trained models. Default: `large-v3`
+- `LANGUAGE` - the language for which transcription should be done. If not set, the language is detected for each transcription.
+
+Currently, the model is configured to run on the CPU. For CUDA-enabled deployments, refer to the original `faster-whisper` repository.
