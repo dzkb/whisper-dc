@@ -6,7 +6,10 @@ import os
 import discord
 from faster_whisper import WhisperModel
 
-model_size = "large-v3"
+MODEL_NAME = os.environ.get("MODEL_NAME", "large-v3")
+LANGUAGE = os.environ.get("LANGUAGE")
+DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN")
+
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -15,7 +18,7 @@ client = discord.Client(intents=intents)
 
 
 def transcribe(model, buffer):
-    segments, _ = model.transcribe(buffer, beam_size=5, language="pl")
+    segments, _ = model.transcribe(buffer, beam_size=5, language=LANGUAGE)
 
     transcription = "\n".join(
         f"`[{segment.start:.2f}s -> {segment.end:.2f}s]` {segment.text}"
@@ -46,6 +49,6 @@ if __name__ == "__main__":
     # The following is to make sure only one instance of the model is loaded
     # and the transcription tasks are queued
     pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-    model = WhisperModel(model_size, compute_type="int8")
+    model = WhisperModel(MODEL_NAME, compute_type="int8")
 
-    client.run(os.environ.get("DISCORD_TOKEN"))
+    client.run(DISCORD_TOKEN)
