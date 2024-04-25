@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "whisper-dc"
+version = "0.1.0"
+description = ""
+authors = ["dzkb <1517445+dzkb@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+faster-whisper = "^1.0.1"
+discord = "^2.3.2"
+ruff = "^0.4.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
