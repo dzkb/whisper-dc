@@ -1,6 +1,6 @@
 # Whisper-powered Voice Message Transcriber
 
-This repository contains code of a simple Discord bot that reacts to voice messages, transcribes them, and sends the transcription as the reply to the original voice message.
+This repository contains code of a simple Discord bot that reacts to voice messages, transcribes them, and sends the transcription as a reply to the original voice message.
 
 The speech-to-text model used is a pre-trained [OpenAI's Whisper](https://github.com/openai/whisper) model (specifically [`large V3`](https://huggingface.co/openai/whisper-large-v3)), using the code from [SYSTRAN/faster-whisper](https://github.com/SYSTRAN/faster-whisper).
 
