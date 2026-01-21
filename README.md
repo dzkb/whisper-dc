@@ -11,7 +11,7 @@ The speech-to-text model used is a pre-trained [OpenAI's Whisper](https://github
 - Install dependencies: `poetry install`
 - Activate the Poetry-created virtualenv: `poetry shell`
 - Set `DISCORD_TOKEN` environment variable to your Discord Bot's Token.
-- Run the code: `python main.py`
+- Run the code: `poetry run whisper-dc`
 
 The bot reacts to discord messages that have an audio attachment with .ogg extension.
 
