@@ -4,10 +4,17 @@ import io
 import os
 
 import discord
-from faster_whisper import WhisperModel
+import librosa
+import soundfile as sf
+from dotenv import load_dotenv
+from pywhispercpp.model import Model
 
-MODEL_NAME = os.environ.get("MODEL_NAME", "large-v3")
-LANGUAGE = os.environ.get("LANGUAGE")
+load_dotenv()
+
+MODEL_NAME = os.environ.get("MODEL_NAME", "large-v3-turbo-q8_0")
+TARGET_SAMPLE_RATE = 16000
+N_THREADS = os.environ.get("N_THREADS", 6)
+LANGUAGE = os.environ.get("LANGUAGE", "pl")
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN")
 
 
@@ -15,13 +22,24 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=intents)
+model = Model(MODEL_NAME, n_threads=int(N_THREADS))
+
+# The following is to make sure only one instance of the model is loaded
+# and the transcription tasks are queued
+pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
 
 
 def transcribe(model, buffer):
-    segments, _ = model.transcribe(buffer, beam_size=5, language=LANGUAGE)
+    data, sample_rate = sf.read(buffer)
+    if data.ndim > 1:
+        data = data.T
+
+    data_resampled = librosa.resample(data, orig_sr=sample_rate, target_sr=TARGET_SAMPLE_RATE)
+
+    segments = model.transcribe(data_resampled, language=LANGUAGE)
 
     transcription = "\n".join(
-        f"`[{segment.start:.2f}s -> {segment.end:.2f}s]` {segment.text}"
+        f"`[{segment.t0:.2f}s -> {segment.t1/100:.2f}s]` {segment.text}"
         for segment in segments
     )
     return transcription
@@ -45,10 +63,9 @@ async def on_message(message):
                 await message.reply(transcription, mention_author=False)
 
 
-if __name__ == "__main__":
-    # The following is to make sure only one instance of the model is loaded
-    # and the transcription tasks are queued
-    pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-    model = WhisperModel(MODEL_NAME, compute_type="int8")
-
+def main():
     client.run(DISCORD_TOKEN)
+
+
+if __name__ == "__main__":
+    main()
